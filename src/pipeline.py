@@ -22,4 +22,4 @@ def insiders():
     df[['customer_id', 'labels']].to_sql('insiders', con=conn, if_exists='replace', index=False)
 
 if __name__ == "__main__":
-    insiders
+    insiders()

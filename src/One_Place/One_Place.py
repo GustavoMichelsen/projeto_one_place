@@ -61,7 +61,7 @@ class One_place(object):
         aux1.columns = ['invoice_no', 'distinct_itens']
 
         # Variable sum
-        aux2 = df.groupby('invoice_no').sum().reset_index()
+        aux2 = df[['invoice_no', 'quantity', 'unit_price', 'customer_id', 'total_price']].groupby('invoice_no').sum().reset_index()
 
         # Summarized DataFrame
         df_new = df[['invoice_no', 'customer_id', 'invoice_date', 'country']].merge(aux2[['invoice_no', 'quantity', 'total_price']], 

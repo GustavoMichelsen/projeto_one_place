@@ -1,7 +1,7 @@
-inflection==0.5.1
+inflection
 numpy
-pandas==2.1.0
+pandas
 plotly-express
-streamlit==1.26.0
+streamlit
 SQLAlchemy
 psycopg2

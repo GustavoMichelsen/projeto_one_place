@@ -29,7 +29,7 @@ Pillow==9.5.0
 plotly==5.17.0
 plotly-express==0.4.1
 protobuf==4.24.3
-psycopg2==2.9.7
+psycopg2-binary
 pyarrow==13.0.0
 pydeck==0.8.0
 Pygments==2.16.1

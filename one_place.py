@@ -1,12 +1,14 @@
-import streamlit            as st
-import pandas               as pd
-import plotly_express       as px
-import plotly.graph_objects as go
-import numpy                as np
-
 import base64
 import datetime
 import inflection
+
+import streamlit            as st
+import pandas               as pd
+import plotly.graph_objects as go
+import numpy                as np
+
+
+from sqlalchemy import create_engine
 
 st.set_page_config(layout='wide')
 
@@ -158,8 +160,30 @@ csv = """
 </style>
 """
 
-def load_data(path):
-    df = pd.read_csv(path)
+def load_data(patendpointh):
+    
+    conn = create_engine(endpoint)
+    querry = """
+        select 
+            op."InvoiceNo",
+            op."StockCode",
+            op."Description",
+            op."Quantity",
+            op."InvoiceDate",
+            op."UnitPrice",
+            op."CustomerID",
+            op."Country",
+            i.labels
+        from one_place op  
+            inner join insiders i on (i.customer_id = op."CustomerID")
+    """
+    df = pd.read_sql(querry, con=conn)
+
+    old_columns = df.columns
+    snekecase = lambda x: inflection.underscore(x)
+    new_columns = list(map(snekecase, old_columns))
+    df.columns = new_columns
+
     df['total_price'] = df['unit_price'] * df['quantity']
     df['invoice_date'] = pd.to_datetime(df['invoice_date'])
     df['day'] = df['invoice_date'].dt.day
@@ -444,7 +468,8 @@ def loyalty_groups(df):
     aux3 = df2[df2['customer_id'] < 100000].drop_duplicates(subset='invoice_no')[['day','month', 'year', 'labels','invoice_no']].reset_index(drop=True)
 
     aux2 = aux2.merge(aux3, on=['invoice_no'], how='left')
-    aux2 = aux2.groupby(['day','month', 'year', 'labels']).mean().reset_index().rename(columns={'total_invoice':'avg_ticket'})
+
+    aux2 = aux2[['day','month', 'year', 'labels', 'total_invoice']].groupby(['day','month', 'year', 'labels']).mean().reset_index().rename(columns={'total_invoice':'avg_ticket'})
     aux1 = aux1.merge(aux2, on=['day','month', 'year', 'labels'], how='left')
 
     # Frequencia média
@@ -623,9 +648,9 @@ def loyalty_groups(df):
         st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
-    # ------ Data import ------
-    path = 'dataset/one_place.csv'
-    df = load_data(path)
+
+    endpoint = 'postgresql://gtv_michelsen:5B8X3A9K1Y7Z@one-place.cue7vx85kv3s.us-east-1.rds.amazonaws.com/one_place'
+    df = load_data(endpoint)
     head(df)
     general_report(df)
     loyalty_groups(df)

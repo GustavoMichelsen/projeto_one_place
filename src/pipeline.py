@@ -12,12 +12,17 @@ def insiders():
     """
     df_raw = pd.read_sql(querry, con=conn)
     
-    pipeline = One_place()
-
+    pipeline = One_place.One_place()
+    print("Querry")
+    
     df = pipeline.data_cleaning(df_raw)
+    print("Data Cleaning")
     df = pipeline.fearture_engineering(df)
+    print("Feature Engineering")
     df = pipeline.data_preparation(df)
+    print("Data Preparation")
     df = pipeline.get_prediction(df)
+    print("Get Prediction")
     
     df[['customer_id', 'labels']].to_sql('insiders', con=conn, if_exists='replace', index=False)
 

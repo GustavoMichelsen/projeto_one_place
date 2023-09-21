@@ -185,7 +185,7 @@ def load_data(patendpointh):
     df.columns = new_columns
 
     df['total_price'] = df['unit_price'] * df['quantity']
-    df['invoice_date'] = pd.to_datetime(df['invoice_date'])
+    df['invoice_date'] = pd.to_datetime(df['invoice_date'], format='%d-%b-%y')
     df['day'] = df['invoice_date'].dt.day
     df['month'] = df['invoice_date'].dt.month
     df['year'] = df['invoice_date'].dt.year
